@@ -3,7 +3,7 @@ local random = Random.new();
 return function(secret) 
 
 
-    if secret then secret = string.split(secret, ":") else
+    if not secret then
         secret = {
             random:NextNumber(0, 63),
             random:NextNumber(0, 127),

@@ -1,18 +1,18 @@
 local ascii85 = require(script.Parent.ascii85)
 
 function seAlgorithm(secret)
-    local usedSeeds = {};
+	local usedSeeds = {}
 
-    local random = Random.new();
+	local random = Random.new()
 
-	local secret_key_6 =  secret[1]
-	local secret_key_7 =  secret[2]
-	local secret_key_44 =  secret[3]
+	local secret_key_6 = secret[1]
+	local secret_key_7 = secret[2]
+	local secret_key_44 = secret[3]
 	local secret_key_8 = secret[4]
 
-    local secret_donotshare = table.concat(secret, ":")
-
 	local floor = math.floor
+	local char = string.char
+	local byte = string.byte
 
 	local function primitive_root_257(idx)
 		local g, m, d = 1, 128, 2 * idx + 1
@@ -37,11 +37,11 @@ function seAlgorithm(secret)
 	end
 
 	local function gen_seed()
-		local seed;
+		local seed
 		repeat
-			seed = random:NextNumber(0, 35184372088832);
-		until not usedSeeds[seed];
-		return seed;
+			seed = random:NextNumber(0, 35184372088832)
+		until not usedSeeds[seed]
+		return seed
 	end
 
 	local function get_random_32()
@@ -56,7 +56,7 @@ function seAlgorithm(secret)
 
 	local function get_next_pseudo_random_byte()
 		if #prev_values == 0 then
-			local rnd = get_random_32() 
+			local rnd = get_random_32()
 			local low_16 = rnd % 65536
 			local high_16 = (rnd - low_16) / 65536
 			local b1 = low_16 % 256
@@ -69,54 +69,34 @@ function seAlgorithm(secret)
 	end
 
 	local function encrypt(str)
-		local seed = gen_seed();
+		local seed = gen_seed()
 		set_seed(seed)
-		local len = string.len(str)
-		local out = {}
-		local prevVal = secret_key_8;
-		for i = 1, len do
-			local byte = string.byte(str, i);
-			out[i] = string.char((byte - (get_next_pseudo_random_byte() + prevVal)) % 256);
-			prevVal = byte;
-		end
-		return ascii85.encode(table.concat(out)), seed;
+		local prevVal = secret_key_8
+		return (str:gsub(".", function(m)
+			m = byte(m)
+			prevVal = m
+			return ("%02x"):format((m - (get_next_pseudo_random_byte() + prevVal)) % 256)
+		end)), seed
 	end
 
-   
-    local charmap = {};
-	local i = 0;
-	local nums = {};
-	for i = 1, 256 do
-		nums[i] = i;
-	end
-	repeat
-		local idx = random:NextNumber(1, #nums);
-		local n = table.remove(nums, idx);
-		charmap[n] = string.char(n - 1);
-	until #nums == 0;
-
-    local function decrypt(str, seed)
-        str = ascii85.decode(str)
+	local function decrypt(str, seed)
 		set_seed(seed)
-		local len = string.len(str)
-		local out = {}
-		local prevVal = secret_key_8;
-		for i = 1, len do
-			local byte = (string.byte(str, i) + (get_next_pseudo_random_byte() + prevVal)) % 256;
-			out[i] = string.char(byte+1);
-			prevVal = byte;
-		end
-		return table.concat(out);
+		local prevVal = secret_key_8
+		return (str:gsub("%x%x", function(c)
+					c = tonumber(c, 16)
+					local byte = (c + (get_next_pseudo_random_byte() + prevVal)) % 256
+					prevVal = byte
+					return char(byte + 1)
+				end))
 	end
-    
-    return {
-        encrypt = encrypt,
-        secret = secret_donotshare,
-        decrypt = decrypt,
-    }
 
+	return {
+		encrypt = encrypt,
+		secret = secret,
+		decrypt = decrypt,
+	}
 end
 
 return {
-    new = seAlgorithm,
+	new = seAlgorithm,
 }
