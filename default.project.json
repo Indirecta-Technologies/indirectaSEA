@@ -1,0 +1,16 @@
+{
+  "name": "indirectaSEA",
+  "tree": {
+    "$className": "DataModel",
+
+  
+
+    "ServerScriptService": {
+      "Indirecta String Encryption Algorithm": {
+        "$path": "src"
+      }
+    }
+
+    }
+
+  }
