@@ -112,6 +112,11 @@ function seAlgorithm(secret)
 		encrypt = encrypt;
 		secret = secret;
 		decrypt = decrypt;
+        __primitive_root_257 = primitive_root_257;
+        __set_seed = set_seed;
+        __gen_seed = gen_seed;
+        __get_random_32 = get_random_32;
+        __get_next_pseudo_random_byte = get_next_pseudo_random_byte;
 	}
 end
 
