@@ -1,27 +1,65 @@
 # indirectaSEA
-String Encryption Algorithm Prototype
+String Encryption Algorithm  
+[Prototype SUBJECT TO CHANGE]
 
-## How this works
+## How to use
+### Encryption
 
-When encrypting a string, the algorithm will generate a secret dictionary of numbers, that will be used to initialize the encryption and decryption functions.
-The encrypted message encoded in ascii85 is returned, along with the seed, that is needed to decode the message along with the secret.
+```lua
+--// Generate random secret
+local random = Random.new();
+local secret = {
+            random:NextNumber(0, 63), --// 6-bit  arbitrary integer (0..63)
+            random:NextNumber(0, 127), --// 7-bit  arbitrary integer (0..127)
+            random:NextNumber(0, 17592186044415), --// 44-bit arbitrary integer (0..17592186044415)
+            random:NextNumber(0, 255); --// 8-bit  arbitrary integer (0..255)
+        };
 
-To decrypt a message, you need to initialize the SEA module using a secret key, and decode it using the seed
+local isea = require(game.ServerScriptService["Indirecta String Encryption Algorithm"]);
 
-Both parties need the same secret to encrypt and decrypt messages, while for decryption the seed is needed additionally
+local state = isea.newState(secret) -- Initialize SEA using random secret
+local str = "Hello metaverse!"
 
+print("Secret 🤫: "..table.concat(state.secret,"; ")) --> 28.39305096030534; 104.46559812685938; 14484132187863.652; 11.391023692364207
 
-local isea = require(game.ServerScriptService["Indirecta String Encryption Algorithm"])(); local en = {isea.encrypt("hi!! lol 3232")}; print("STRING & SEED", en[1], en[2]) print("! SECRET !",isea.secret)
+local ciphertext, seed = state.encrypt(str)
 
+print("Encrypted String: "..ciphertext) --> e680e0a92cda96cf83c239a81d85166e
+print("Seed: "..seed) --> 1373726384325.5884
 
-STRING & SEED <~igQ2VBCc6s9<4JBiW~> 5114059046281.628
-! SECRET ! 33.0925813664131:85.16011281255085:7456822026424.957:20.09582908157535
+print("Test passed:"..tostring(state.decrypt(ciphertext, seed) == str))
+```
 
+### Decryption
 
-TO:DO
+```lua
+--// Generate random secret
+local random = Random.new();
+local secret = ("35.84831716766803; 23.639969842435168; 3982959064904.493; 244.42364953524924"):split("; ");
 
-Find a way to compress the secret, and a way to encode the seed
+local isea = require(game.ServerScriptService["Indirecta String Encryption Algorithm"]);
 
+local state = isea.newState(secret) -- Initialize SEA using random secret
+local ciphertext = "3a7dee43cebfd7ba63011211ad813a49"
+local seed = 3462364821075.735
 
+print("Secret used 🤫: "..table.concat(state.secret,"; "))
 
-00.0000000000000:11.11111111111111:2222222222222.222:33.33333333333333
+local str = state.decrypt(ciphertext, seed)
+
+print("Decrypted String: "..str)
+print("Seed used: "..seed)
+```
+
+### Derive secret from a string
+
+```lua
+local isea = require(game.ServerScriptService["Indirecta String Encryption Algorithm"]);
+
+--// Generate secret from string
+local passphrase = "Shhh!"
+local secret = isea.deriveSecret(passphrase)
+
+print("Passphrase used 🤫: "..passphrase)
+print("Derived secret 🤫: "..game:GetService("HttpService"):JSONEncode(secret))
+```
