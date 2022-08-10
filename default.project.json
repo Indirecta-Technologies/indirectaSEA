@@ -6,7 +6,7 @@
   
 
     "ServerScriptService": {
-      "Indirecta String Encryption Algorithm": {
+      "iSEA": {
         "$path": "src"
       }
     }

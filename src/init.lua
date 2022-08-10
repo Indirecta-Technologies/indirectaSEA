@@ -91,21 +91,18 @@ function seAlgorithm(secret)
 			local _byte = (m - (get_next_pseudo_random_byte() + prevVal)) % 256
 			prevVal = m
 			return ("%02x"):format(_byte)
-		end)),
-			seed
+		end)), seed
 	end
 
 	local function decrypt(str, seed)
 		set_seed(seed)
 		local prevVal = secret_key_8
-		return (
-				str:gsub("%x%x", function(c)
+		return (str:gsub("%x%x", function(c)
 					c = tonumber(c, 16)
 					local _byte = (c + (get_next_pseudo_random_byte() + prevVal)) % 256
 					prevVal = _byte
 					return char(_byte + 1)
-				end)
-			)
+				end))
 	end
 
 	return {

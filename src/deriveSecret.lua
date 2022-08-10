@@ -99,20 +99,26 @@ local function sha1(message)
     return result
 end
 
+--[[
 
---  calculate any hash-function on your string (for example, MD5, SHA-1, SHA256, there exist a lot of Lua libraries to calculate hash-sums).
--- Then split the hashsum result (hexadecimal string) into 12-hex-digit chunks, convert them to numbers (up to 2^48) and apply Lua modulo operator to reduce to the size you need
---  local hash = sha1(string)
---  local hash = tonumber(hash:sub(1,12), 16) % 2^48
---  local hash = hash % 2^48
---  local hash = hash % 2^48
+  `/shdmmmmmmmmmd-`ymmmddyo:`       //                sm- /h/                        --
+`yNMMMMMMMMMMMMm-.dMMMMMMMMMN+     `MN  `-:::.`   .-:-hM- -o-  .-::.  .::-.   `.:::` MN--. `-::-.
+yMMMMMMMMMMMMMd.:NMMMMMMMMMMMM+    `MN  yMs+oNh  oNy++mM- +Mo -Mm++:`hmo+yN+ .dmo++- MNoo/ `o+odN:
+yMMMMMMMMMMMMy`+NMMMMMMMMMMMMM+    `MN  yM:  dM. MN   yM- +Mo -Mh   /Mmss    sM+     MN    +h ohMo
+`yNMMMMMMMMMo`sMMMMMMMMMMMMMNo     `MN  yM:  dM. oNy//dM- +Mo -Mh   `dNs++o. -mm+//- dM+/+ mN+/sMo
+  `/shddddd/ odddddddddddho:`       ::  .:`  -:   `:///-` .:. `:-     .://:`  `-///. `-//: `-///:.
+
+Indirecta Technologies, Licensed under the "Gnu General Public License v3"
+
+Group Link: https://www.roblox.com/groups/5717887/Indirecta
+
+]]
+
+--  Calculate any hash-function on your string (for example, MD5, SHA-1, SHA256, there exist a lot of Lua libraries to calculate hash-sums).
+--  Then split the hashsum result (hexadecimal string) into hex-digit chunks, convert them to numbers (up to 2^48) and apply the Lua modulo operator to reduce to the size you need
+
 
 local function deriveSecret(str)
-    --- 6-bit integer = byte % 64
-	-- 7-bit integer = byte % 128
-	-- 44-bit integer = byte % 17592186044416
-	-- 8-bit integer = byte % 256
-
     local hash = sha1(str)
     local partitions = {
         -- divide hash in 4 partitions and convert to number
@@ -122,10 +128,10 @@ local function deriveSecret(str)
         tonumber(hash:sub(31,40), 16) % 2^48;
     }
     return {
-        partitions[1] % 64,
-        partitions[2] % 128,
-        partitions[3] % 17592186044416,
-        partitions[4] % 256,
+        partitions[1] % 64, -- 6-bit integer = byte % 64
+        partitions[2] % 128, -- 7-bit integer = byte % 128
+        partitions[3] % 17592186044416, -- 44-bit integer = byte % 17592186044416
+        partitions[4] % 256, -- 8-bit integer = byte % 256
     }
 end
 

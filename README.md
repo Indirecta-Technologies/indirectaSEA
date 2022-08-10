@@ -2,6 +2,8 @@
 String Encryption Algorithm  
 [Prototype SUBJECT TO CHANGE]
 
+Adapted from the [Prometheus String Encryption Step](https://github.com/levno-710/Prometheus/blob/master/src/prometheus/steps/EncryptStrings.lua) for standalone use as a library
+
 ## How to use
 ### Encryption
 
