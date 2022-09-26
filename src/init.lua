@@ -101,7 +101,7 @@ function seAlgorithm(secret)
 					c = tonumber(c, 16)
 					local _byte = (c + (get_next_pseudo_random_byte() + prevVal)) % 256
 					prevVal = _byte
-					return char(_byte + 1)
+					return char(_byte)
 				end))
 	end
 

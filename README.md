@@ -17,7 +17,7 @@ local secret = {
             random:NextNumber(0, 255); --// 8-bit  arbitrary integer (0..255)
         };
 
-local isea = require(game.ServerScriptService["Indirecta String Encryption Algorithm"]);
+local isea = require(game.ServerScriptService["iSEA"]);
 
 local state = isea.newState(secret) -- Initialize SEA using random secret
 local str = "Hello metaverse!"
@@ -35,11 +35,9 @@ print("Test passed:"..tostring(state.decrypt(ciphertext, seed) == str))
 ### Decryption
 
 ```lua
---// Generate random secret
-local random = Random.new();
 local secret = ("35.84831716766803; 23.639969842435168; 3982959064904.493; 244.42364953524924"):split("; ");
 
-local isea = require(game.ServerScriptService["Indirecta String Encryption Algorithm"]);
+local isea = require(game.ServerScriptService["iSEA"]);
 
 local state = isea.newState(secret) -- Initialize SEA using random secret
 local ciphertext = "3a7dee43cebfd7ba63011211ad813a49"
@@ -56,7 +54,7 @@ print("Seed used: "..seed)
 ### Derive secret from a string
 
 ```lua
-local isea = require(game.ServerScriptService["Indirecta String Encryption Algorithm"]);
+local isea = require(game.ServerScriptService["iSEA"]);
 
 --// Generate secret from string
 local passphrase = "Shhh!"
@@ -64,4 +62,15 @@ local secret = isea.deriveSecret(passphrase)
 
 print("Passphrase used 🤫: "..passphrase)
 print("Derived secret 🤫: "..game:GetService("HttpService"):JSONEncode(secret))
+
+local state = isea.newState(secret) -- Initialize SEA using random secret
+local str = "Hello metaverse!"
+
+local ciphertext, seed = state.encrypt(str)
+
+print("Encrypted String: "..ciphertext) --> e680e0a92cda96cf83c239a81d85166e
+print("Seed: "..seed) --> 1373726384325.5884
+
+print("Test passed:"..tostring(state.decrypt(ciphertext, seed) == str))
+
 ```
